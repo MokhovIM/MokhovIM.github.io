@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peppa Pig Quiz: Musical Instruments</title>
+    <style>
+        /* Основной фон: голубое небо с легкими облачками (паттерн) */
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Arial Rounded MT Bold', sans-serif;
+            background-color: #87CEEB;
+            background-image: radial-gradient(circle, #FFFFFF 10%, transparent 10%), 
+                              radial-gradient(circle, #FFFFFF 10%, transparent 10%);
+            background-size: 60px 60px;
+            background-position: 0 0, 30px 30px;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* Карточка квиза */
+        .quiz-container {
+            background-color: #FFF0F5; /* Нежно-розовый фон */
+            border: 6px solid #FF69B4; /* Ярко-розовая рамка */
+            border-radius: 25px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        h1 {
+            color: #FF1493;
+            margin-top: 0;
+            font-size: 28px;
+        }
+
+        .question-text {
+            font-size: 20px;
+            margin-bottom: 20px;
+            line-height: 1.4;
+            background: #fff;
+            padding: 15px;
+            border-radius: 15px;
+            border: 2px dashed #FFB6C1;
+        }
+
+        .eng-text {
+            display: block;
+            color: #0066cc;
+            font-size: 18px;
+            margin-top: 8px;
+        }
+
+        /* Кнопки ответов */
+        .option-btn {
+            display: block;
+            width: 100%;
+            background-color: #FFA07A; /* Светло-оранжевый/лососевый */
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            font-family: inherit;
+        }
+
+        .option-btn:hover {
+            transform: scale(1.02);
+            background-color: #FF7F50;
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Состояния кнопок при ответе */
+        .correct {
+            background-color: #32CD32 !important;
+            box-shadow: 0 0 10px #32CD32;
+        }
+        
+        .wrong {
+            background-color: #FF4500 !important;
+        }
+
+        /* Блок с объяснением */
+        #feedback {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 15px;
+            font-size: 16px;
+            animation: popIn 0.3s ease-out;
+        }
+
+        .feedback-correct {
+            background-color: #E0FFE0;
+            border: 2px solid #32CD32;
+            color: #006400;
+        }
+
+        .feedback-wrong {
+            background-color: #FFE4E1;
+            border: 2px solid #FF4500;
+            color: #8B0000;
+        }
+
+        /* Кнопка "Дальше" */
+        #next-btn, #start-btn, #restart-btn {
+            background-color: #FF69B4;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 15px 30px;
+            font-size: 20px;
+            cursor: pointer;
+            margin-top: 20px;
+            display: none; /* Скрыта по умолчанию */
+            margin-left: auto;
+            margin-right: auto;
+            font-family: inherit;
+            box-shadow: 0 5px 0 #C71585;
+        }
+
+        #start-btn, #restart-btn {
+            display: inline-block;
+        }
+
+        #next-btn:active, #start-btn:active, #restart-btn:active {
+            transform: translateY(5px);
+            box-shadow: none;
+        }
+
+        /* Экраны */
+        #quiz-screen, #result-screen {
+            display: none;
+        }
+
+        .progress {
+            color: #FF1493;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        
+        <!-- Стартовый экран -->
+        <div id="start-screen">
+            <h1>🐷 Музыкальный Квиз Пеппы 🎵</h1>
+            <p style="font-size: 18px;">Привет, Илья! Готов проверить, как внимательно ты смотрел мультик про самодельные инструменты?</p>
+            <p style="font-size: 50px; margin: 10px 0;">🎸🥁🎺</p>
+            <button id="start-btn" onclick="startQuiz()">Начать игру! 🚀</button>
+        </div>
+
+        <!-- Экран с вопросами -->
+        <div id="quiz-screen">
+            <div class="progress">Вопрос <span id="current-q">1</span> из 10</div>
+            <div class="question-text" id="question-text">
+                Текст вопроса
+            </div>
+            
+            <div id="options-container">
+                <!-- Кнопки будут добавлены через JavaScript -->
+            </div>
+
+            <div id="feedback"></div>
+            <button id="next-btn" onclick="nextQuestion()">Дальше ➡️</button>
+        </div>
+
+        <!-- Экран результатов -->
+        <div id="result-screen">
+            <h1>Ура! Квиз пройден! 🎉</h1>
+            <p style="font-size: 60px; margin: 10px 0;">🏆</p>
+            <p style="font-size: 22px;">Твой результат: <strong id="score-text" style="color: #FF1493; font-size: 26px;"></strong></p>
+            <button id="restart-btn" onclick="restartQuiz()">Сыграть еще раз 🔄</button>
+        </div>
+
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                qRu: "Что дети собираются делать сегодня на занятии?",
+                qEn: "What are the children going to do today in class?",
+                options: ["Make their own musical instruments", "Play football outside", "Draw pictures"],
+                correct: 0,
+                rationale: "Мадам Газель сказала, что сегодня они будут делать самодельные музыкальные инструменты."
+            },
+            {
+                qRu: "Из чего Мадам Газель предлагает сделать инструменты?",
+                qEn: "What does Madame Gazelle suggest making the instruments from?",
+                options: ["Real pianos and trumpets", "Only paper and glue", "Bits and bobs, bottles, and rubber bands"],
+                correct: 2,
+                rationale: "Мадам Газель принесла целую коробку разных мелочей: бутылочки, резиночки, стаканчики."
+            },
+            {
+                qRu: "Как, по словам Мадам Газель, можно извлечь звук из музыкального инструмента?",
+                qEn: "How does Madame Gazelle say you can make a sound with a musical instrument?",
+                options: ["Hit it, blow into it, or shake it", "Sing a loud song to it", "Just look at it very hard"],
+                correct: 0,
+                rationale: "Учительница объяснила главные способы: ударить палочкой, подуть внутрь или потрясти."
+            },
+            {
+                qRu: "Как назвали картонную коробку с натянутыми резинками?",
+                qEn: "What did they call the cardboard box with rubber bands?",
+                options: ["A loud drum", "A twanganger", "A little guitar"],
+                correct: 1,
+                rationale: "Из-за смешного звука «дзынь» (twang), когда дергаешь за резинку, инструмент назвали «twanganger»."
+            },
+            {
+                qRu: "Какой предмет использует Сьюзи Овечка для своей музыки?",
+                qEn: "What object does Suzy Sheep use for her music?",
+                options: ["A plastic bucket", "A big bell", "Bottles with water"],
+                correct: 2,
+                rationale: "Сьюзи взяла стеклянные бутылки и налила в них разное количество воды."
+            },
+            {
+                qRu: "Как Сьюзи играет на своих бутылках с водой?",
+                qEn: "How does Suzy play her bottles with water?",
+                options: ["She taps them with a pencil", "She shakes them up and down", "She throws them in the air"],
+                correct: 0,
+                rationale: "Она легонько стучала по ним карандашом, а Мадам Газель добавила, что в них можно еще и дуть."
+            },
+            {
+                qRu: "Какую музыку играет Джордж с помощью ведерка, воды и трубочки?",
+                qEn: "What kind of music does George play using a bucket, water, and a straw?",
+                options: ["Very loud music", "Sad music", "Bubbly music"],
+                correct: 2,
+                rationale: "Джордж дул через соломинку в воду, и получалась веселая «булькающая» (bubbly) музыка."
+            },
+            {
+                qRu: "Что Пеппа положила в свой самодельный шейкер, чтобы он звучал?",
+                qEn: "What did Peppa put in her homemade shaker to make it sound?",
+                options: ["Beans and marbles", "Coins and buttons", "Sand and shells"],
+                correct: 0,
+                rationale: "Пеппа наполнила свою баночку бобами и стеклянными шариками (marbles)."
+            },
+            {
+                qRu: "Из чего Фредди Лис сделал свой очень смешной музыкальный инструмент?",
+                qEn: "What did Freddy Fox make his very funny musical instrument out of?",
+                options: ["A balloon", "A yogurt pot", "A shoe box"],
+                correct: 0,
+                rationale: "Фредди растягивал сдувающийся воздушный шарик, из-за чего получался пищащий звук."
+            },
+            {
+                qRu: "На чем играет Мадам Газель своими пальцами в самом конце?",
+                qEn: "What does Madame Gazelle play with her fingers at the very end?",
+                options: ["A real piano", "Drinking glasses", "A big guitar"],
+                correct: 1,
+                rationale: "Она водила влажными пальцами по краям бокалов (drinking glasses), создавая красивую мелодию."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackBox = document.getElementById('feedback');
+        const nextBtn = document.getElementById('next-btn');
+        const currentQSpan = document.getElementById('current-q');
+        const scoreText = document.getElementById('score-text');
+
+        function startQuiz() {
+            startScreen.style.display = 'none';
+            resultScreen.style.display = 'none';
+            quizScreen.style.display = 'block';
+            currentQuestionIndex = 0;
+            score = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            // Очистка состояния
+            feedbackBox.style.display = 'none';
+            nextBtn.style.display = 'none';
+            optionsContainer.innerHTML = '';
+            
+            const currentQ = quizData[currentQuestionIndex];
+            currentQSpan.innerText = currentQuestionIndex + 1;
+            
+            // Установка текста вопроса
+            questionText.innerHTML = `
+                ${currentQ.qRu}
+                <span class="eng-text">${currentQ.qEn}</span>
+            `;
+
+            // Создание кнопок ответов
+            currentQ.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(index, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIndex, btnElement) {
+            const currentQ = quizData[currentQuestionIndex];
+            const buttons = optionsContainer.getElementsByClassName('option-btn');
+            
+            // Отключаем все кнопки
+            for(let btn of buttons) {
+                btn.disabled = true;
+            }
+
+            // Проверка правильности
+            if (selectedIndex === currentQ.correct) {
+                btnElement.classList.add('correct');
+                score++;
+                showFeedback(true, `Правильно! 🎉<br><small>${currentQ.rationale}</small>`);
+            } else {
+                btnElement.classList.add('wrong');
+                buttons[currentQ.correct].classList.add('correct'); // Показываем правильный
+                showFeedback(false, `Упс, ошибочка! 🙈<br><small>${currentQ.rationale}</small>`);
+            }
+
+            nextBtn.style.display = 'block';
+        }
+
+        function showFeedback(isCorrect, text) {
+            feedbackBox.innerHTML = text;
+            feedbackBox.className = isCorrect ? 'feedback-correct' : 'feedback-wrong';
+            feedbackBox.style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            quizScreen.style.display = 'none';
+            resultScreen.style.display = 'block';
+            scoreText.innerText = `${score} из ${quizData.length}`;
+        }
+
+        function restartQuiz() {
+            startQuiz();
+        }
+    </script>
+</body>
+</html>
