@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Peppa Pig Quiz 🍓</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --pink:    #FF6B9D;
+    --pink-light: #FFE0ED;
+    --green:   #4CAF7D;
+    --green-light: #E0F7EB;
+    --red:     #FF4D4D;
+    --red-light: #FFE0E0;
+    --yellow:  #FFD63A;
+    --bg:      #FFF5F8;
+    --card:    #FFFFFF;
+    --text:    #3D2C35;
+    --muted:   #9E7F8A;
+    --radius:  18px;
+  }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem 1rem 4rem;
+    background-image:
+      radial-gradient(circle at 10% 20%, #FFD6E7 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, #D6EEFF 0%, transparent 40%);
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 560px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 1.75rem;
+  }
+  .header .emoji-row {
+    font-size: 2.4rem;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    animation: bounce 1.8s ease-in-out infinite;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  .header h1 {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--pink);
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+  }
+  .header p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  /* Progress */
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+  }
+  .progress-track {
+    flex: 1;
+    height: 10px;
+    background: #F0D9E4;
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--pink), #FF9DC6);
+    border-radius: 99px;
+    transition: width 0.5s cubic-bezier(.4,0,.2,1);
+  }
+  .progress-label {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--pink);
+    min-width: 36px;
+    text-align: right;
+  }
+
+  /* Score dots */
+  .dots {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: #F0D9E4;
+    transition: background 0.3s;
+  }
+  .dot.ok  { background: var(--green); }
+  .dot.bad { background: var(--red); }
+
+  /* Question card */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 1.5rem 1.5rem 1.25rem;
+    box-shadow: 0 4px 24px rgba(255,107,157,0.10), 0 1px 4px rgba(0,0,0,0.04);
+    margin-bottom: 1rem;
+  }
+  .q-num {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--pink);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  .q-en {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.35;
+    margin-bottom: 4px;
+  }
+  .q-ru {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 1.25rem;
+  }
+
+  /* Options */
+  .options { display: flex; flex-direction: column; gap: 9px; }
+
+  .opt {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #FFF5F8;
+    border: 2px solid #F0D9E4;
+    border-radius: 14px;
+    padding: 0.7rem 1rem;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    text-align: left;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .opt:hover:not(:disabled) {
+    border-color: var(--pink);
+    background: var(--pink-light);
+    transform: translateX(3px);
+  }
+  .opt:active:not(:disabled) { transform: scale(0.98); }
+
+  .badge {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid #F0D9E4;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 900;
+    flex-shrink: 0;
+    color: var(--muted);
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+  }
+
+  .opt.correct {
+    background: var(--green-light);
+    border-color: var(--green);
+    transform: none;
+  }
+  .opt.correct .badge { background: var(--green); border-color: var(--green); color: white; }
+
+  .opt.wrong {
+    background: var(--red-light);
+    border-color: var(--red);
+    transform: none;
+  }
+  .opt.wrong .badge { background: var(--red); border-color: var(--red); color: white; }
+
+  .opt:disabled { cursor: default; }
+
+  /* Feedback */
+  .feedback {
+    margin-top: 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    line-height: 1.5;
+    display: none;
+  }
+  .feedback.show { display: block; animation: fadeIn 0.25s ease; }
+  .feedback.correct { background: var(--green-light); color: #2A7A52; border: 2px solid #A8E6C4; }
+  .feedback.wrong   { background: var(--red-light);   color: #B83333; border: 2px solid #FFBABA; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  /* Next button */
+  .nav {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0.75rem;
+  }
+  .btn-next {
+    background: var(--pink);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 0.7rem 1.4rem;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.15s, transform 0.1s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-next:hover  { background: #e55a8a; }
+  .btn-next:active { transform: scale(0.97); }
+  .btn-next.show   { display: flex; animation: fadeIn 0.2s ease; }
+
+  /* Score screen */
+  .score-screen {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 24px rgba(255,107,157,0.12);
+  }
+  .trophy { font-size: 3.5rem; margin-bottom: 0.5rem; }
+  .score-big {
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--pink);
+    margin-bottom: 4px;
+  }
+  .score-sub { font-size: 0.9rem; font-weight: 700; color: var(--muted); margin-bottom: 1rem; }
+  .score-msg { font-size: 1.05rem; font-weight: 800; color: var(--text); margin-bottom: 1.5rem; line-height: 1.4; }
+
+  .btn-restart {
+    background: var(--yellow);
+    color: var(--text);
+    border: none;
+    border-radius: 14px;
+    padding: 0.75rem 1.75rem;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    margin-bottom: 1.5rem;
+  }
+  .btn-restart:hover  { background: #f0c820; }
+  .btn-restart:active { transform: scale(0.97); }
+
+  .review { text-align: left; display: flex; flex-direction: column; gap: 6px; }
+  .rv {
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 0.5rem 0.85rem;
+    border-radius: 10px;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .rv.ok  { background: var(--green-light); color: #2A7A52; }
+  .rv.bad { background: var(--red-light);   color: #B83333; }
+  .rv-icon { flex-shrink: 0; }
+
+  /* Mobile tweaks */
+  @media (max-width: 420px) {
+    .header h1 { font-size: 1.35rem; }
+    .q-en { font-size: 1.05rem; }
+    .opt  { font-size: 0.95rem; padding: 0.65rem 0.9rem; }
+    .card { padding: 1.25rem 1.1rem 1rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="emoji-row">🐷🍓</div>
+    <h1>Peppa Pig Quiz</h1>
+    <p>Pick Your Own Fruit • 10 вопросов</p>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-track"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+    <div class="progress-label" id="prog-label">0 / 10</div>
+  </div>
+
+  <div class="dots" id="dots">
+    <div class="dot" id="d0"></div><div class="dot" id="d1"></div><div class="dot" id="d2"></div>
+    <div class="dot" id="d3"></div><div class="dot" id="d4"></div><div class="dot" id="d5"></div>
+    <div class="dot" id="d6"></div><div class="dot" id="d7"></div><div class="dot" id="d8"></div>
+    <div class="dot" id="d9"></div>
+  </div>
+
+  <div id="body"></div>
+
+</div>
+
+<script>
+const Q = [
+  {
+    en: "Who do Peppa and George go to visit?",
+    ru: "К кому едут Пеппа и Джордж?",
+    opts: ["Granny and Grandpa Pig", "Suzy Sheep", "Miss Rabbit"],
+    ans: 0,
+    ok:  "✓ Верно! Они едут к бабушке и дедушке. / They visit Granny and Grandpa Pig!",
+    bad: "✗ Не угадал. Правильный ответ: Granny and Grandpa Pig — бабушка и дедушка Пиг."
+  },
+  {
+    en: "What does Granny Pig want to make?",
+    ru: "Что хочет приготовить бабушка Пиг?",
+    opts: ["Apple pie", "Strawberry jam", "Carrot cake"],
+    ans: 1,
+    ok:  "✓ Верно! Бабушка хочет сделать клубничное варенье. / Granny wants to make strawberry jam!",
+    bad: "✗ Не угадал. Правильный ответ: Strawberry jam — клубничное варенье."
+  },
+  {
+    en: "How many strawberries did Grandpa grow?",
+    ru: "Сколько клубник вырастил дедушка в саду?",
+    opts: ["Ten strawberries", "No strawberries", "One strawberry"],
+    ans: 2,
+    ok:  "✓ Верно! Дедушка вырастил только одну клубнику. / Grandpa grew only one strawberry!",
+    bad: "✗ Не угадал. Правильный ответ: One strawberry — всего одна клубничка."
+  },
+  {
+    en: "Where do they go to get more strawberries?",
+    ru: "Куда они едут за клубникой?",
+    opts: ["Miss Rabbit's farm", "The supermarket", "Daddy Pig's house"],
+    ans: 0,
+    ok:  "✓ Верно! Они едут на ферму Мисс Рэббит. / They go to Miss Rabbit's farm!",
+    bad: "✗ Не угадал. Правильный ответ: Miss Rabbit's farm — ферма Мисс Рэббит."
+  },
+  {
+    en: "What is the name of Miss Rabbit's place?",
+    ru: "Как называется ферма Мисс Рэббит?",
+    opts: ["Pick Your Own Fruit", "Rabbit's Garden", "Strawberry Land"],
+    ans: 0,
+    ok:  "✓ Верно! Ферма называется Pick Your Own Fruit — сам выбери фрукты!",
+    bad: "✗ Не угадал. Правильный ответ: Pick Your Own Fruit — сам выбери фрукты!"
+  },
+  {
+    en: "What fruit do they pick at the farm?",
+    ru: "Какие ягоды они собирают на ферме?",
+    opts: ["Apples", "Blueberries", "Strawberries"],
+    ans: 2,
+    ok:  "✓ Верно! Они собирают клубнику. / They pick strawberries!",
+    bad: "✗ Не угадал. Правильный ответ: Strawberries — клубника."
+  },
+  {
+    en: "What colour are ripe strawberries?",
+    ru: "Какого цвета спелая клубника?",
+    opts: ["Green", "Red", "Yellow"],
+    ans: 1,
+    ok:  "✓ Верно! Спелая клубника красная. / Ripe strawberries are red!",
+    bad: "✗ Не угадал. Правильный ответ: Red — красная. Спелая клубника всегда красная!"
+  },
+  {
+    en: "Who owns the strawberry farm?",
+    ru: "Кому принадлежит клубничная ферма?",
+    opts: ["Grandpa Pig", "Mummy Pig", "Miss Rabbit"],
+    ans: 2,
+    ok:  "✓ Верно! Ферма принадлежит Мисс Рэббит. / Miss Rabbit owns the farm!",
+    bad: "✗ Не угадал. Правильный ответ: Miss Rabbit — Мисс Рэббит."
+  },
+  {
+    en: "What do Peppa and George put the strawberries in?",
+    ru: "Куда Пеппа и Джордж кладут клубнику?",
+    opts: ["A basket", "A bag", "A box"],
+    ans: 0,
+    ok:  "✓ Верно! Они кладут ягоды в корзинку. / They put the strawberries in a basket!",
+    bad: "✗ Не угадал. Правильный ответ: A basket — корзинка."
+  },
+  {
+    en: "Which word means 'very big'?",
+    ru: "Какое слово означает 'очень большой'?",
+    opts: ["Tiny", "Giant", "Small"],
+    ans: 1,
+    ok:  "✓ Верно! Giant значит огромный — как та большая клубника! / Giant means very big!",
+    bad: "✗ Не угадал. Правильный ответ: Giant — огромный, очень большой."
+  }
+];
+
+const LETTERS = ['A','B','C'];
+let cur = 0, score = 0, done = false, results = [];
+
+function render() {
+  const body = document.getElementById('body');
+  const pct = Math.round(cur / Q.length * 100);
+  document.getElementById('prog').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = cur + ' / ' + Q.length;
+
+  if (cur >= Q.length) { showScore(body); return; }
+
+  const q = Q[cur];
+  body.innerHTML = `
+    <div class="card">
+      <div class="q-num">Вопрос ${cur + 1} из ${Q.length}</div>
+      <div class="q-en">${q.en}</div>
+      <div class="q-ru">${q.ru}</div>
+      <div class="options">
+        ${q.opts.map((o,i) => `
+          <button class="opt" data-i="${i}" onclick="choose(${i})">
+            <span class="badge">${LETTERS[i]}</span>${o}
+          </button>`).join('')}
+      </div>
+      <div class="feedback" id="fb"></div>
+    </div>
+    <div class="nav">
+      <button class="btn-next" id="nxt" onclick="next()">
+        ${cur < Q.length - 1 ? 'Следующий вопрос →' : 'Результат →'}
+      </button>
+    </div>
+  `;
+  done = false;
+}
+
+function choose(i) {
+  if (done) return;
+  done = true;
+  const q = Q[cur];
+  const btns = document.querySelectorAll('.opt');
+  btns.forEach(b => b.disabled = true);
+  const correct = i === q.ans;
+  btns[i].classList.add(correct ? 'correct' : 'wrong');
+  if (!correct) btns[q.ans].classList.add('correct');
+  if (correct) score++;
+  results.push(correct);
+  document.getElementById('d' + cur).classList.add(correct ? 'ok' : 'bad');
+  const fb = document.getElementById('fb');
+  fb.textContent = correct ? q.ok : q.bad;
+  fb.className = 'feedback show ' + (correct ? 'correct' : 'wrong');
+  const nxt = document.getElementById('nxt');
+  nxt.classList.add('show');
+}
+
+function next() { cur++; render(); }
+
+function showScore(body) {
+  document.getElementById('prog').style.width = '100%';
+  document.getElementById('prog-label').textContent = Q.length + ' / ' + Q.length;
+
+  const pct = Math.round(score / Q.length * 100);
+  let trophy, msg;
+  if (score === 10) { trophy = '🏆'; msg = 'Великолепно! Ты настоящий знаток Пеппы!'; }
+  else if (score >= 7) { trophy = '🌟'; msg = 'Хорошая работа! Ты очень внимательно смотрел мультик!'; }
+  else if (score >= 5) { trophy = '🍓'; msg = 'Неплохо! Посмотри мультик ещё раз и попробуй снова.'; }
+  else { trophy = '🐷'; msg = 'Попробуй ещё раз — у тебя всё получится!'; }
+
+  const rev = results.map((ok, idx) => `
+    <div class="rv ${ok ? 'ok' : 'bad'}">
+      <span class="rv-icon">${ok ? '✓' : '✗'}</span>
+      <span>Q${idx+1}: ${Q[idx].en}</span>
+    </div>`).join('');
+
+  body.innerHTML = `
+    <div class="score-screen">
+      <div class="trophy">${trophy}</div>
+      <div class="score-big">${score} / ${Q.length}</div>
+      <div class="score-sub">${pct}% правильных ответов</div>
+      <div class="score-msg">${msg}</div>
+      <button class="btn-restart" onclick="restart()">🔄 Пройти снова</button>
+      <div class="review">${rev}</div>
+    </div>
+  `;
+}
+
+function restart() {
+  cur = 0; score = 0; done = false; results = [];
+  for (let i = 0; i < Q.length; i++) {
+    const d = document.getElementById('d' + i);
+    if (d) d.className = 'dot';
+  }
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
