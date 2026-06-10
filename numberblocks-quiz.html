@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Numberblocks Quiz 🔢</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --one:   #FF6B6B;
+  --two:   #FF9F43;
+  --three: #54A0FF;
+  --four:  #5F27CD;
+  --five:  #FF6CAE;
+  --bg:    #0E1B3D;
+  --card:  #1A2E5A;
+  --card2: #162448;
+  --gold:  #FFD93D;
+  --green: #6BCB77;
+  --red:   #FF4757;
+  --text:  #EEF2FF;
+  --muted: #8899CC;
+  --r:     16px;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 2rem 1rem 4rem;
+  background-image:
+    radial-gradient(ellipse at 15% 10%, rgba(84,160,255,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 90%, rgba(255,107,107,0.10) 0%, transparent 50%);
+}
+
+.wrap { width: 100%; max-width: 580px; }
+
+/* ── HEADER ── */
+.header { text-align: center; margin-bottom: 2rem; }
+.header .title {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 2rem;
+  color: var(--gold);
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+  text-shadow: 0 2px 12px rgba(255,217,61,0.35);
+}
+.header .sub { font-size: 0.9rem; color: var(--muted); font-weight: 700; }
+
+/* ── CHARACTER BLOCKS ── */
+.char-strip {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 1.75rem;
+}
+.nblock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.nblock-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.nblock-square {
+  width: 22px; height: 22px;
+  border-radius: 4px;
+  border: 2px solid rgba(255,255,255,0.25);
+}
+.nblock-label {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.nb1 .nblock-square { background: var(--one); }
+.nb2 .nblock-square { background: var(--two); }
+.nb3 .nblock-square { background: var(--three); }
+.nb4 .nblock-square { background: var(--four); }
+.nb5 .nblock-square { background: var(--five); }
+
+/* ── PROGRESS ── */
+.prog-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
+.prog-track { flex: 1; height: 8px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; }
+.prog-fill { height: 100%; background: linear-gradient(90deg, var(--three), var(--gold)); border-radius: 99px; transition: width 0.5s cubic-bezier(.4,0,.2,1); }
+.prog-label { font-size: 0.8rem; font-weight: 800; color: var(--gold); min-width: 40px; text-align: right; }
+
+/* ── DOTS ── */
+.dots { display: flex; gap: 6px; justify-content: center; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.12); transition: background 0.3s, transform 0.2s; }
+.dot.ok  { background: var(--green); transform: scale(1.2); }
+.dot.bad { background: var(--red); }
+
+/* ── CARD ── */
+.card {
+  background: var(--card);
+  border-radius: var(--r);
+  padding: 1.5rem 1.5rem 1.25rem;
+  border: 1px solid rgba(255,255,255,0.07);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+  margin-bottom: 1rem;
+}
+.q-num {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+}
+.q-en {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+.q-ru {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 1.25rem;
+}
+
+/* ── BAR CHART ── */
+.bar-chart {
+  background: var(--card2);
+  border-radius: 12px;
+  padding: 1rem 1rem 0.6rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.bar-chart-title {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+.bars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 14px;
+  height: 90px;
+}
+.bar-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.bar-fill {
+  width: 32px;
+  border-radius: 6px 6px 0 0;
+  transition: height 0.4s ease;
+  position: relative;
+}
+.bar-fill::after {
+  content: attr(data-val);
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  font-weight: 900;
+  color: var(--text);
+}
+.bar-name {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+/* ── OPTIONS ── */
+.options { display: flex; flex-direction: column; gap: 8px; }
+.opt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.05);
+  border: 1.5px solid rgba(255,255,255,0.09);
+  border-radius: 12px;
+  padding: 0.7rem 1rem;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--text);
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.opt:hover:not(:disabled) {
+  border-color: var(--gold);
+  background: rgba(255,217,61,0.08);
+  transform: translateX(3px);
+}
+.badge {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  border: 1.5px solid rgba(255,255,255,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 900;
+  flex-shrink: 0;
+  color: var(--muted);
+  transition: all 0.2s;
+}
+.opt.correct { background: rgba(107,203,119,0.15); border-color: var(--green); }
+.opt.correct .badge { background: var(--green); border-color: var(--green); color: #fff; }
+.opt.wrong   { background: rgba(255,71,87,0.12);  border-color: var(--red); }
+.opt.wrong   .badge { background: var(--red);   border-color: var(--red);   color: #fff; }
+.opt:disabled { cursor: default; transform: none !important; }
+
+/* ── FEEDBACK ── */
+.feedback {
+  margin-top: 1rem;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.5;
+  display: none;
+}
+.feedback.show { display: block; animation: pop 0.22s ease; }
+.feedback.correct { background: rgba(107,203,119,0.12); color: #a8f0b0; border: 1px solid rgba(107,203,119,0.3); }
+.feedback.wrong   { background: rgba(255,71,87,0.10);   color: #ffaaaa; border: 1px solid rgba(255,71,87,0.25); }
+
+@keyframes pop { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:none; } }
+
+/* ── NAV ── */
+.nav { display: flex; justify-content: flex-end; margin-top: 0.75rem; }
+.btn-next {
+  background: var(--gold);
+  color: #1A1A2E;
+  border: none;
+  border-radius: 12px;
+  padding: 0.65rem 1.35rem;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 900;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s, transform 0.1s;
+}
+.btn-next:hover  { background: #f5cc00; }
+.btn-next:active { transform: scale(0.97); }
+.btn-next.show   { display: flex; animation: pop 0.2s ease; }
+
+/* ── SCORE SCREEN ── */
+.score-screen {
+  background: var(--card);
+  border-radius: var(--r);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.07);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.trophy { font-size: 3.5rem; margin-bottom: 0.5rem; }
+.score-big {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 3.5rem;
+  color: var(--gold);
+  text-shadow: 0 2px 16px rgba(255,217,61,0.4);
+  margin-bottom: 2px;
+}
+.score-sub  { font-size: 0.88rem; color: var(--muted); font-weight: 700; margin-bottom: 1rem; }
+.score-msg  { font-size: 1rem; font-weight: 800; color: var(--text); margin-bottom: 1.5rem; line-height: 1.5; }
+.btn-restart {
+  background: var(--gold);
+  color: #1A1A2E;
+  border: none;
+  border-radius: 12px;
+  padding: 0.75rem 1.75rem;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-bottom: 1.5rem;
+}
+.btn-restart:hover { background: #f5cc00; }
+
+.review { text-align: left; display: flex; flex-direction: column; gap: 6px; }
+.rv {
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.5rem 0.85rem;
+  border-radius: 10px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.rv.ok  { background: rgba(107,203,119,0.12); color: #a8f0b0; }
+.rv.bad { background: rgba(255,71,87,0.10);   color: #ffaaaa; }
+
+/* ── MOBILE ── */
+@media (max-width: 420px) {
+  .header .title { font-size: 1.6rem; }
+  .q-en { font-size: 1rem; }
+  .bars { gap: 10px; }
+  .bar-fill { width: 26px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="title">🔢 Numberblocks Quiz</div>
+    <p class="sub">The Pyramid of Puzzles • Series 8 E20 • 10 questions</p>
+  </div>
+
+  <!-- Numberblock decorations -->
+  <div class="char-strip">
+    <div class="nblock nb1">
+      <div class="nblock-body"><div class="nblock-square"></div></div>
+      <div class="nblock-label">ONE</div>
+    </div>
+    <div class="nblock nb2">
+      <div class="nblock-body"><div class="nblock-square"></div><div class="nblock-square"></div></div>
+      <div class="nblock-label">TWO</div>
+    </div>
+    <div class="nblock nb3">
+      <div class="nblock-body"><div class="nblock-square"></div><div class="nblock-square"></div><div class="nblock-square"></div></div>
+      <div class="nblock-label">THREE</div>
+    </div>
+    <div class="nblock nb4">
+      <div class="nblock-body"><div class="nblock-square"></div><div class="nblock-square"></div><div class="nblock-square"></div><div class="nblock-square"></div></div>
+      <div class="nblock-label">FOUR</div>
+    </div>
+    <div class="nblock nb5">
+      <div class="nblock-body"><div class="nblock-square"></div><div class="nblock-square"></div><div class="nblock-square"></div><div class="nblock-square"></div><div class="nblock-square"></div></div>
+      <div class="nblock-label">FIVE</div>
+    </div>
+  </div>
+
+  <div class="prog-wrap">
+    <div class="prog-track"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+    <div class="prog-label" id="prog-label">0 / 10</div>
+  </div>
+
+  <div class="dots" id="dots">
+    <div class="dot" id="d0"></div><div class="dot" id="d1"></div><div class="dot" id="d2"></div>
+    <div class="dot" id="d3"></div><div class="dot" id="d4"></div><div class="dot" id="d5"></div>
+    <div class="dot" id="d6"></div><div class="dot" id="d7"></div><div class="dot" id="d8"></div>
+    <div class="dot" id="d9"></div>
+  </div>
+
+  <div id="body"></div>
+</div>
+
+<script>
+// Bar chart helper — returns SVG-style HTML bar chart
+function barChart(title, bars) {
+  // bars = [{label, val, color}], max val = 5
+  const MAX_H = 72;
+  const cols = bars.map(b => {
+    const h = Math.round((b.val / 5) * MAX_H);
+    return `<div class="bar-col">
+      <div class="bar-fill" style="height:${h}px;background:${b.color}" data-val="${b.val}"></div>
+      <div class="bar-name">${b.label}</div>
+    </div>`;
+  }).join('');
+  return `<div class="bar-chart">
+    <div class="bar-chart-title">${title}</div>
+    <div class="bars">${cols}</div>
+  </div>`;
+}
+
+const C = {one:'#FF6B6B', two:'#FF9F43', three:'#54A0FF', four:'#5F27CD', five:'#FF6CAE'};
+
+const Q = [
+  {
+    en: "What is the show about — what are Numberblocks exploring?",
+    ru: "Что исследуют Числоблоки в этом эпизоде?",
+    opts: ["A mysterious pyramid", "A deep ocean cave", "A haunted forest"],
+    ans: 0,
+    ok:  "✓ Верно! Числоблоки исследуют загадочную пирамиду. / They explore a mysterious pyramid!",
+    bad: "✗ Не угадал. Правильный ответ: A mysterious pyramid — загадочная пирамида."
+  },
+  {
+    en: "What kind of charts fill the inside of the pyramid?",
+    ru: "Какие графики заполняют пирамиду внутри?",
+    opts: ["Bar charts", "Pie charts", "Star maps"],
+    ans: 0,
+    ok:  "✓ Верно! Внутри пирамиды — bar charts (столбчатые диаграммы).",
+    bad: "✗ Не угадал. Правильный ответ: Bar charts — столбчатые диаграммы."
+  },
+  {
+    en: "How many Numberblocks go into the pyramid?",
+    ru: "Сколько Числоблоков заходят в пирамиду?",
+    opts: ["3", "5", "4"],
+    ans: 1,
+    ok:  "✓ Верно! В пирамиду заходят 5 Числоблоков: One, Two, Three, Four и Five.",
+    bad: "✗ Не угадал. Правильный ответ: 5 — One, Two, Three, Four и Five."
+  },
+  {
+    en: "Look at this bar chart. Which Numberblock is the tallest bar?",
+    ru: "Посмотри на диаграмму. Чей столбик самый высокий?",
+    chart: barChart("Favourite Fruits 🍎", [
+      {label:"One", val:1, color:C.one},
+      {label:"Two", val:3, color:C.two},
+      {label:"Three", val:5, color:C.three},
+      {label:"Four", val:2, color:C.four},
+      {label:"Five", val:4, color:C.five},
+    ]),
+    opts: ["One", "Three", "Five"],
+    ans: 1,
+    ok:  "✓ Верно! Самый высокий столбик — Three, его значение 5. / Three has the tallest bar!",
+    bad: "✗ Не угадал. Самый высокий столбик у Three — его значение равно 5."
+  },
+  {
+    en: "A bar chart shows: One=2, Two=4, Three=1. Which bar is the SHORTEST?",
+    ru: "Диаграмма показывает: One=2, Two=4, Three=1. Какой столбик САМЫЙ КОРОТКИЙ?",
+    chart: barChart("Blocks Collected 🧱", [
+      {label:"One", val:2, color:C.one},
+      {label:"Two", val:4, color:C.two},
+      {label:"Three", val:1, color:C.three},
+    ]),
+    opts: ["One", "Two", "Three"],
+    ans: 2,
+    ok:  "✓ Верно! Three = 1, это самый короткий столбик. Shortest = самый короткий.",
+    bad: "✗ Не угадал. Правильный ответ: Three — у него значение 1, самое маленькое."
+  },
+  {
+    en: "What does a bar chart SHOW us?",
+    ru: "Что НАМ ПОКАЗЫВАЕТ столбчатая диаграмма?",
+    opts: ["How to add numbers together", "How much or how many of something", "The alphabet"],
+    ans: 1,
+    ok:  "✓ Верно! Bar chart показывает сколько чего-то есть. / It shows how much or how many!",
+    bad: "✗ Не угадал. Bar chart показывает количество чего-либо — how much or how many."
+  },
+  {
+    en: "Look at the chart. How many stars does Two have?",
+    ru: "Посмотри на диаграмму. Сколько звёзд у Two?",
+    chart: barChart("Stars ⭐", [
+      {label:"One", val:1, color:C.one},
+      {label:"Two", val:3, color:C.two},
+      {label:"Three", val:2, color:C.three},
+      {label:"Four", val:5, color:C.four},
+    ]),
+    opts: ["1", "3", "5"],
+    ans: 1,
+    ok:  "✓ Верно! Столбик Two достигает числа 3. У Two три звезды!",
+    bad: "✗ Не угадал. Смотри на высоту столбика Two — он достигает числа 3."
+  },
+  {
+    en: "What magic words does Three say to open the pyramid door?",
+    ru: "Какие волшебные слова говорит Three, чтобы открыть дверь пирамиды?",
+    opts: ["Abracadabra", "Open sesame", "One two three go"],
+    ans: 1,
+    ok:  "✓ Верно! Three говорит 'Open sesame' — это фраза из сказки Али-Баба! / Ali Baba reference!",
+    bad: "✗ Не угадал. Three говорит 'Open sesame' — крылатое выражение из сказки Али-Баба."
+  },
+  {
+    en: "Which Numberblock has the MOST blocks in their body?",
+    ru: "У какого Числоблока БОЛЬШЕ ВСЕГО блоков?",
+    opts: ["Three", "Four", "Five"],
+    ans: 2,
+    ok:  "✓ Верно! Five состоит из 5 блоков — больше всех. Five is the biggest!",
+    bad: "✗ Не угадал. Правильный ответ: Five — у него 5 блоков, это самое большое число."
+  },
+  {
+    en: "A bar chart shows: sticks=3, leaves=4. What does the chart help the friends figure out?",
+    ru: "Диаграмма: палочек=3, листьев=4. Что помогает понять эта диаграмма?",
+    chart: barChart("Items Needed 🌿", [
+      {label:"Sticks 🪵", val:3, color:"#A0522D"},
+      {label:"Leaves 🍃", val:4, color:"#4CAF50"},
+    ]),
+    opts: ["How many items to collect", "Which colour to paint", "How fast to run"],
+    ans: 0,
+    ok:  "✓ Верно! Диаграмма подсказывает сколько предметов нужно собрать. / How many items to collect!",
+    bad: "✗ Не угадал. Диаграмма показывает сколько чего нужно — how many items to collect."
+  }
+];
+
+const LETTERS = ['A','B','C'];
+let cur = 0, score = 0, answered = false, results = [];
+
+function render() {
+  const body = document.getElementById('body');
+  const pct = Math.round(cur / Q.length * 100);
+  document.getElementById('prog').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = cur + ' / ' + Q.length;
+
+  if (cur >= Q.length) { showScore(body); return; }
+
+  const q = Q[cur];
+  body.innerHTML = `
+    <div class="card">
+      <div class="q-num">Question ${cur + 1} of ${Q.length}</div>
+      <div class="q-en">${q.en}</div>
+      <div class="q-ru">${q.ru}</div>
+      ${q.chart || ''}
+      <div class="options">
+        ${q.opts.map((o,i) => `
+          <button class="opt" data-i="${i}" onclick="choose(${i})">
+            <span class="badge">${LETTERS[i]}</span>${o}
+          </button>`).join('')}
+      </div>
+      <div class="feedback" id="fb"></div>
+    </div>
+    <div class="nav">
+      <button class="btn-next" id="nxt" onclick="next()">
+        ${cur < Q.length - 1 ? 'Next question →' : 'See results →'}
+      </button>
+    </div>
+  `;
+  answered = false;
+}
+
+function choose(i) {
+  if (answered) return;
+  answered = true;
+  const q = Q[cur];
+  const btns = document.querySelectorAll('.opt');
+  btns.forEach(b => b.disabled = true);
+  const correct = i === q.ans;
+  btns[i].classList.add(correct ? 'correct' : 'wrong');
+  if (!correct) btns[q.ans].classList.add('correct');
+  if (correct) score++;
+  results.push(correct);
+  const d = document.getElementById('d' + cur);
+  if (d) d.classList.add(correct ? 'ok' : 'bad');
+  const fb = document.getElementById('fb');
+  fb.textContent = correct ? q.ok : q.bad;
+  fb.className = 'feedback show ' + (correct ? 'correct' : 'wrong');
+  document.getElementById('nxt').classList.add('show');
+}
+
+function next() { cur++; render(); }
+
+function showScore(body) {
+  document.getElementById('prog').style.width = '100%';
+  document.getElementById('prog-label').textContent = Q.length + ' / ' + Q.length;
+  const pct = Math.round(score / Q.length * 100);
+  let trophy, msg;
+  if (score === 10) { trophy = '🏆'; msg = 'Perfect score! You are a true Numberblocks master! 🌟\nОтличный результат — ты настоящий знаток!'; }
+  else if (score >= 7) { trophy = '⭐'; msg = 'Great work! You read bar charts really well!\nОтличная работа! Ты хорошо читаешь диаграммы!'; }
+  else if (score >= 5) { trophy = '🔢'; msg = 'Not bad! Watch the episode again and try once more.\nНеплохо! Посмотри эпизод ещё раз.'; }
+  else { trophy = '🧱'; msg = 'Keep practising — you can do it!\nПродолжай тренироваться — у тебя всё получится!'; }
+
+  const rev = results.map((ok, idx) => `
+    <div class="rv ${ok ? 'ok' : 'bad'}">
+      <span>${ok ? '✓' : '✗'}</span>
+      <span>Q${idx+1}: ${Q[idx].en}</span>
+    </div>`).join('');
+
+  body.innerHTML = `
+    <div class="score-screen">
+      <div class="trophy">${trophy}</div>
+      <div class="score-big">${score} / ${Q.length}</div>
+      <div class="score-sub">${pct}% correct</div>
+      <div class="score-msg">${msg}</div>
+      <button class="btn-restart" onclick="restart()">🔄 Try again</button>
+      <div class="review">${rev}</div>
+    </div>
+  `;
+}
+
+function restart() {
+  cur = 0; score = 0; answered = false; results = [];
+  for (let i = 0; i < Q.length; i++) {
+    const d = document.getElementById('d' + i);
+    if (d) d.className = 'dot';
+  }
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
