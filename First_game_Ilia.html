@@ -991,8 +991,7 @@ function createMonster() {
   [-1, 1].forEach(side => {
     for (let i = 0; i < 3; i++) {
       const claw = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.3, 6), clawMat);
-      claw.position.set(side * 1.5 + i * 0.1 * -side, 2.
-      5, 0.2);
+      claw.position.set(side * 1.5 + i * 0.1 * -side, 2.5, 0.2);
       claw.rotation.z = side * 0.5;
       claw.rotation.x = 0.3;
       monster.add(claw);
@@ -1168,7 +1167,7 @@ function updateCityPhase(delta, elapsed) {
   game.cityTimer += delta;
   
   // Через 5 минут (300 сек) — событие с кораблём
-  if (game.cityTimer >= 300 && game.phase === 'city') {
+  if (game.cityTimer >= 20 && game.phase === 'city') {
     game.phase = 'alert1';
     game.cargoShip = createCargoShip();
     game.cargoShip.position.set(60, 40, -30);
@@ -1662,8 +1661,8 @@ function updatePlayer(delta) {
   const dir = new THREE.Vector3();
   
   // Клавиатура
-  if (game.keys['KeyW'] || game.keys['ArrowUp']) dir.z += 1;
-  if (game.keys['KeyS'] || game.keys['ArrowDown']) dir.z -= 1;
+  if (game.keys['KeyW'] || game.keys['ArrowUp']) dir.z -= 1;
+  if (game.keys['KeyS'] || game.keys['ArrowDown']) dir.z += 1;
   if (game.keys['KeyA'] || game.keys['ArrowLeft']) dir.x -= 1;
   if (game.keys['KeyD'] || game.keys['ArrowRight']) dir.x += 1;
   
